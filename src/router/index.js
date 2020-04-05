@@ -7,6 +7,8 @@ const  home=()=>import('views/home/home')
 const  category=()=>import('views/category/category')
 const  cart=()=>import('views/cart/cart')
 const  profile=()=>import('views/profile/profile')
+
+
 const  routes= [
   {
     path: '',

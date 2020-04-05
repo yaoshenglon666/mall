@@ -3,7 +3,7 @@ import axios from 'axios'
 export  function request(config) {
   //创建对象
   const intance=axios.create({
-    baseURL:'http://152.136.185.210:8000/api/h3',
+    baseURL:'http://152.136.185.210:8000/api/h8',
     timeout:5000
   })
 
