@@ -38,11 +38,17 @@
       scrollTo(x,y,time){
         //获取better-scroll插件对象
         //调用回到顶部函数scrollTo（x,y,time）
-        this.scroll.scrollTo(x,y,time)
+        this.scroll && this.scroll.scrollTo(x,y,time)
+        //this.scroll不为空的时候才会执行this.scroll.scrollTo(x,y,time)
       },
       //继续滚动下一次
       finishPullUp(){
-        this.scroll.finishPullUp()
+        // 默认只有一次，想继续调用就需要调用finishPullUp()
+        this.scroll &&  this.scroll.finishPullUp()
+      },
+      //刷行better-scroll 高度
+      refresh(){
+        this.scroll && this.scroll.refresh()
       }
     },
     //计算属性
@@ -74,16 +80,21 @@
         click:true
       })
        //滚动事件，回调函数默认参数position为坐标
-      this.scroll.on('scroll',(position)=>{
+      //判断是否需要监听滚动事件
+      if(this.probeType>1){
+        this.scroll.on('scroll',(position)=>{
          //丢出滚动事件及其坐标，调用者可通过获取此函数操作
         this.$emit('scroll',position)
       })
+      }
+      
       // 滚动到底部的时候触发事件，用来做获取更多数据
-      //  this.scroll.finishPullUp()
-    this.scroll.on('pullingUp',()=>{
-      this.$emit('pullingUp')
-        
+      //判断pullUpLoad是否需要监听事件
+      if(this.pullUpLoad){
+        this.scroll.on('pullingUp',()=>{
+        this.$emit('pullingUp')
       })
+      }
     },
   }
 </script>

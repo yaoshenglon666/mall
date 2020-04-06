@@ -35,6 +35,8 @@ import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
 import BackTop from "components/content/backTop/BackTop";
 
+import {debounce} from "common/utils.js"
+
 import methods from "./methods";
 
 export default {
@@ -74,6 +76,24 @@ export default {
     this.getHomeGoods("pop");
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
+    
+  },
+  //挂载结束
+  mounted(){
+    /**
+     * GoodListItem组件创建better-scroll对象是在mounted里创建的
+     * 所以在监听他丢出来的事件的时候我们也放在mounted里
+     * 放在created里面监听怕有时候无法访问到better-scroll
+     * 监听GoodListItme丢出的图片加载完成事件，以便刷行better-scroll 
+     * 由于图片加载事件过于平凡，采用防抖函数来处理，防抖函数用于处理调用平凡的地方
+     * 将要执行的操作this.$refs.scroll.refresh传入debounce，此处.refresh不能带()，因为传入的是函数 ，500为延迟时间
+     * debounce函数最终返回的是一个函数其实就是你传入的操作this.$refs.scroll.refresh
+     * 监听到图片事件此处不在执行this.$refs.scroll.refresh而执行refresh(ebounce函数返回的函数)
+     */
+    const refresh=debounce(this.$refs.scroll.refresh,500)
+    this.$bus.$on('itemImageLoad',()=>{
+      refresh()
+    }) 
   },
   methods
 };

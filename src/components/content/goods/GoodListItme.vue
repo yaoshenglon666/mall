@@ -1,7 +1,7 @@
 <template>
   <div class="goods-item">
-
-      <img :src="good.show.img"/>
+      <!-- 监听图片加载事件：@load -->
+      <img :src="good.show.img" @load="imgLoad"/>
       <div class="goods-info">
         <p>{{good.title}}</p>
         <span class="price">{{good.price}}</span>
@@ -21,6 +21,15 @@
         default(){
           return {}
         }
+      }
+    },
+    methods:{
+      imgLoad(){
+        /**
+         * 我们无法访问到组件:Scroll(better-scroll )，所以将事件丢出
+         * 将图片加载事件丢到：事件总线（$bus），事件总线在main.js创建
+         */
+        this.$bus.$emit('itemImageLoad')
       }
     }
 
