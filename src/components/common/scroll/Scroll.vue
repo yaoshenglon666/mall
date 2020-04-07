@@ -33,7 +33,7 @@
     },
     //调用函数
     methods:{
-      //封装better-scroll插件对象回到顶部函数scrollTo（x,y,time）
+      //封装better-scroll插件对象scrollTo（x,y,time）回到某个位置
       //方便外部调用
       scrollTo(x,y,time){
         //获取better-scroll插件对象
@@ -49,6 +49,11 @@
       //刷行better-scroll 高度
       refresh(){
         this.scroll && this.scroll.refresh()
+      },
+      //返回滚动高度
+      getScrollY(){
+        //this.scroll不为null则返回this.scroll.y 否则返回0
+        return this.scroll?this.scroll.y:0
       }
     },
     //计算属性

@@ -7,7 +7,7 @@ const  home=()=>import('views/home/home')
 const  category=()=>import('views/category/category')
 const  cart=()=>import('views/cart/cart')
 const  profile=()=>import('views/profile/profile')
-
+const  Detail=()=>import('views/detail/Detail')
 
 const  routes= [
   {
@@ -18,28 +18,40 @@ const  routes= [
     path: '/home',
     component: home,
     meta:{
-      title:'首页'
+      title:'首页',
+      keepAlive:true
     },
   },
   {
     path: '/category',
     component: category,
     meta:{
-      title:'分类'
+      title:'分类',
+      keepAlive:true
     },
   },
   {
     path: '/cart',
     component: cart,
     meta:{
-      title:'购物车'
+      title:'购物车',
+      keepAlive:true
     },
   },
   {
     path: '/profile',
     component: profile,
     meta:{
-      title:'我的'
+      title:'我的',
+      keepAlive:true
+    },
+  },
+  {
+    path: '/detail/:id', //动态路由将商品ID传过去
+    component: Detail,
+    meta:{
+      title:'详情',
+      keepAlive:false
     },
   },
 ]

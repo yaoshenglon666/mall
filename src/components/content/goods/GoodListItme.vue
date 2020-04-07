@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="itemClick">
       <!-- 监听图片加载事件：@load -->
       <img :src="good.show.img" @load="imgLoad"/>
       <div class="goods-info">
@@ -30,6 +30,10 @@
          * 将图片加载事件丢到：事件总线（$bus），事件总线在main.js创建
          */
         this.$bus.$emit('itemImageLoad')
+      },
+      itemClick(){
+        // 将商品的iid传过去
+        this.$router.push("/detail/"+this.good.iid)
       }
     }
 

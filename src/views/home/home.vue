@@ -1,9 +1,16 @@
 <template>
   <div id="home">
+    <!-- 头部导航 -->
     <NavBar class="home-nav">
       <div slot="center">购物街</div>
     </NavBar>
-    <!-- 组件Scroll属性probeType为驼峰定义方式，在绑定属性的时候要使用 - 因此:probe-type -->
+    <!--  tabControl做吸顶效果 默认隐藏-->
+    <TabControl  :titles="['流行','新款','精选']" @tabClick="tabClick"
+      ref="tabControl1" class="tabControl" v-show="isTabFixed"/>
+    <!-- 
+      将要滚动的区域放在scroll组件里面
+      组件Scroll属性probeType为驼峰定义方式，在绑定属性的时候要使用 - 因此:probe-type
+    -->
     <Scroll
       class="content"
       ref="scroll"
@@ -12,11 +19,17 @@
       :pull-up-load="true"
       @pullingUp="pullingUp"
     >
-      <HomeSwier :banners="banners" />
+      <!-- 
+        监听图片加载事件，为了tabControl吸顶效果，
+      -->
+      <HomeSwier :banners="banners" @swierImgLoad="swierImgLoad"/>
       <Recommend :recommends="recommends" />
       <Feature />
-      <!--接收tabcontrol丢出的事件-->
-      <TabControl class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick" />
+      <!--tabcontrol正常位置
+        监听组件TabControl丢出的点击事件来切换数据
+      -->
+      <TabControl  :titles="['流行','新款','精选']" @tabClick="tabClick"
+      ref="tabControl2" />
       <GoodsList :goods="showGoods" />
     </Scroll>
     <!--  @click.native使组件拥有click事件 -->
@@ -61,7 +74,10 @@ export default {
         sell: { page: 0, list: [] }
       },
       currentType: "pop",
-      isShow: false
+      isShow: false,
+      tabOffsetTop:0,
+      isTabFixed:false,
+      saveY:0
     };
   },
   //计算属性
@@ -84,7 +100,7 @@ export default {
      * GoodListItem组件创建better-scroll对象是在mounted里创建的
      * 所以在监听他丢出来的事件的时候我们也放在mounted里
      * 放在created里面监听怕有时候无法访问到better-scroll
-     * 监听GoodListItme丢出的图片加载完成事件，以便刷行better-scroll 
+     * 监听GoodListItme丢出的图片加载完成事件，以便刷新better-scroll 
      * 由于图片加载事件过于平凡，采用防抖函数来处理，防抖函数用于处理调用平凡的地方
      * 将要执行的操作this.$refs.scroll.refresh传入debounce，此处.refresh不能带()，因为传入的是函数 ，500为延迟时间
      * debounce函数最终返回的是一个函数其实就是你传入的操作this.$refs.scroll.refresh
@@ -95,13 +111,26 @@ export default {
       refresh()
     }) 
   },
+  //销毁
+  destroyed(){
+  },
+  //活跃
+  activated(){
+    //再次获取活跃也就是返回的时候获取离开前滚动的高度
+    this.$refs.scroll.scrollTo(0,this.saveY,0)
+    this.$refs.scroll.refresh()
+  },
+  //离开
+  deactivated(){
+    //离开的时候记录一下当前滚动的位置
+    this.saveY=this.$refs.scroll.getScrollY()  
+  },
   methods
 };
 </script>
 
 <style scoped>
 #home {
-  padding-top: 44px;
   height: 100vh;
   position: relative;
 }
@@ -109,17 +138,14 @@ export default {
   background-color: var(--color-tint);
   box-shadow: 0 1px 1px rgba(100, 100, 100, 0.1);
   color: #fff;
-  position: fixed;
+  /* 在使用原生滚动的时候为了不让导航跟着滚动而设置，现在采用了better-scroll就不需要了 */
+  /* position: fixed;
   left: 0;
   right: 0px;
   top: 0px;
-  z-index: 9;
+  z-index: 9; */
 }
-.tab-control {
-  /*position: sticky; 某些浏览器不支持，但是移动端基本支持*/
-  position: sticky;
-  top: 44px;
-}
+
 .content {
   /* height: 300px; */
   overflow: hidden;
@@ -128,5 +154,9 @@ export default {
   bottom: 49px;
   left: 0;
   right: 0;
+}
+.tabControl{
+  position: relative;
+  z-index: 9;
 }
 </style>
