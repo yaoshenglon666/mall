@@ -2,7 +2,7 @@
   <NavBar>
     <div slot="left" class="left" @click="bClick"><img src="~assets/img/common/back.svg" alt=""></div>
     <div slot="center" class="titles">
-      <div v-for="(item,index) in titles" class="titles-item"
+      <div v-for="(item,index) in titles" class="titles-item" :key="index"
       :class="{active:currentIndex==index}"
       @click="itemClick(index)">
         {{item}}

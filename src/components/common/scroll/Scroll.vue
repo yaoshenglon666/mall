@@ -12,6 +12,7 @@
   // 导入插件
   import BScroll from 'better-scroll'
   export default {
+    name:"Scroll",
     //组件
     components:{
     

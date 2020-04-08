@@ -8,6 +8,7 @@
     <TabControl  :titles="['流行','新款','精选']" @tabClick="tabClick"
       ref="tabControl1" class="tabControl" v-show="isTabFixed"/>
     <!-- 
+      使用滚动组件一定要设定高度
       将要滚动的区域放在scroll组件里面
       组件Scroll属性probeType为驼峰定义方式，在绑定属性的时候要使用 - 因此:probe-type
     -->
@@ -19,7 +20,7 @@
       :pull-up-load="true"
       @pullingUp="pullingUp"
     >
-      <!-- 
+    <!-- 
         监听图片加载事件，为了tabControl吸顶效果，
       -->
       <HomeSwier :banners="banners" @swierImgLoad="swierImgLoad"/>
@@ -31,6 +32,7 @@
       <TabControl  :titles="['流行','新款','精选']" @tabClick="tabClick"
       ref="tabControl2" />
       <GoodsList :goods="showGoods" />
+    
     </Scroll>
     <!--  @click.native使组件拥有click事件 -->
     <BackTop @click.native="backLick" v-show="isShow" />

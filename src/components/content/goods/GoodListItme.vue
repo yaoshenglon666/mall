@@ -1,7 +1,10 @@
 <template>
   <div class="goods-item" @click="itemClick">
-      <!-- 监听图片加载事件：@load -->
-      <img :src="good.show.img" @load="imgLoad"/>
+      <!-- 监听图片加载事件：@load
+        首页，详情也 所展示的数据结构不同，
+        通过v-lazy来判断最终使用
+      -->
+      <img v-lazy="showImg"  @load="imgLoad"/>
       <div class="goods-info">
         <p>{{good.title}}</p>
         <span class="price">{{good.price}}</span>
@@ -22,6 +25,17 @@
           return {}
         }
       }
+    },
+    computed:{
+      showImg(){
+        // //|| this.good.image
+        // console.log(this.good.show.img )
+        // return this.good.show.img ;
+        //  Object.keys(this.good.show).length>0 ?
+
+        return this.good.image || this.good.show.img 
+      }
+      
     },
     methods:{
       imgLoad(){
