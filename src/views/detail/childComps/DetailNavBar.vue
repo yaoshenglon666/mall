@@ -32,7 +32,8 @@
     //调用函数
     methods:{
       itemClick(index){
-        this.currentIndex=index
+        this.currentIndex=index;
+        this.$emit("titleClick",index)
       },
       bClick(){
         this.$router.back()

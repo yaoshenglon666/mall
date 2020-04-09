@@ -40,8 +40,9 @@
     methods:{
       imgLoad(){
         /**
-         * 我们无法访问到组件:Scroll(better-scroll )，所以将事件丢出
-         * 将图片加载事件丢到：事件总线（$bus），事件总线在main.js创建
+         * 组件只会调用GoodsList
+         * 当调用者想监听我事件的时候 是无法直接监听的
+         * 所以将事件放入事件总线里面
          */
         this.$bus.$emit('itemImageLoad')
       },

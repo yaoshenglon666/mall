@@ -22,12 +22,12 @@ export default {
     this.$refs.tabControl1.currentIndex=index
     this.$refs.tabControl2.currentIndex=index
   },
-  backLick() {
-    //<Scroll class="content" ref="scroll">
-    //this.$refs.scroll 获取到的就是Scroll组件对象
-    //Scroll组件里面有一个函数scrollTo（x,y,time）
-    this.$refs.scroll.scrollTo(0, 0, 500)
-  },
+  // backLick() {
+  //   //<Scroll class="content" ref="scroll">
+  //   //this.$refs.scroll 获取到的就是Scroll组件对象
+  //   //Scroll组件里面有一个函数scrollTo（x,y,time）
+  //   this.$refs.scroll.scrollTo(0, 0, 500)
+  // },
   contentScrool(position) {
     // 当滚动超过默认值的时候显示
     this.isShow = (-position.y) > 1000

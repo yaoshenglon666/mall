@@ -48,9 +48,10 @@ import NavBar from "components/common/navbar/NavBar";
 import Scroll from "components/common/scroll/Scroll";
 import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
-import BackTop from "components/content/backTop/BackTop";
+
 
 import {debounce} from "common/utils.js"
+import { itemListenerMinxin, backTopMinxin } from "common/mixin.js";
 
 import methods from "./methods";
 
@@ -64,7 +65,6 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
-    BackTop
   },
   data() {
     return {
@@ -76,10 +76,9 @@ export default {
         sell: { page: 0, list: [] }
       },
       currentType: "pop",
-      isShow: false,
       tabOffsetTop:0,
       isTabFixed:false,
-      saveY:0
+      saveY:0,
     };
   },
   //计算属性
@@ -88,6 +87,8 @@ export default {
       return this.goods[this.currentType].list;
     }
   },
+  //混合属性
+  mixins: [itemListenerMinxin,backTopMinxin],
   //组件初始化后需要调用的方法
   created() {
     this.getHomeMulitdata();
@@ -107,17 +108,31 @@ export default {
      * 将要执行的操作this.$refs.scroll.refresh传入debounce，此处.refresh不能带()，因为传入的是函数 ，500为延迟时间
      * debounce函数最终返回的是一个函数其实就是你传入的操作this.$refs.scroll.refresh
      * 监听到图片事件此处不在执行this.$refs.scroll.refresh而执行refresh(ebounce函数返回的函数)
+     * 
+     * home.vue跟Detail.vue都使用了GoodListItem组件，都需要监听itemImageLoad事件
+     * 所以组件重复代码通过混合属性mixin导入重复代码
      */
-    const refresh=debounce(this.$refs.scroll.refresh,500)
-    this.$bus.$on('itemImageLoad',()=>{
-      refresh()
-    }) 
+    // const refresh=debounce(this.$refs.scroll.refresh,500)
+    // this.$bus.$on('itemImageLoad',()=>{
+    //   refresh()
+    // }) 
+    
   },
   //销毁
   destroyed(){
+    // 通过给 $off第二参数传递一个函数，可以让其只销毁home里的事件，而不会销毁detail里的事件
+    this.$bus.$off("goodsImgLoadEvent", this.bcFunc);
   },
   //活跃
   activated(){
+    /**
+       * this.bcFunc在混入文件mixin.js定义
+       * 无法直接访问GoodListItme丢出事件
+       * 所以通过事件总线方式监听
+       * home.vue被<keep-alive>缓存了 所以可以放在activated
+       */
+    this.$bus.$on("itemImageLoad", this.bcFunc);
+    
     //再次获取活跃也就是返回的时候获取离开前滚动的高度
     this.$refs.scroll.scrollTo(0,this.saveY,0)
     this.$refs.scroll.refresh()
