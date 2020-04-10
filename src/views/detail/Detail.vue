@@ -1,6 +1,6 @@
 <template>
   <div id="detail">
-    <detail-navBar class="detail-nb" @titleClick="titleClick"/>
+    <detail-navBar ref="nb" class="detail-nb" @titleClick="titleClick"/>
     <!-- 使用滚动组件一定要给组件设定固定的高度
       监听@scroll事件必须设置属性:probe-type="3"
     -->
@@ -14,13 +14,12 @@
       <goods-list ref="goodsList" :goods="recommendList" />
       <!--  @click.native使组件拥有click事件 -->
     </scroll>
+    <detail-bottom-bar @addEvent="addEvent" />
     <BackTop @click.native="backLick" v-show="isShow" />
   </div>
 </template>
 
 <script>
-  import Scroll from "components/common/scroll/Scroll";
-  import GoodsList from "components/content/goods/GoodsList";
   import DetailNavBar from "./childComps/DetailNavBar";
   import DetailSwiper from "./childComps/DetailSwiper";
   import DetailBaseInfo from "./childComps/DetailBaseInfo";
@@ -28,8 +27,14 @@
   import DetailGoodsInfo from "./childComps/DetailGoodsInfo";
   import DetailParamInfo  from "./childComps/DetailParamInfo";
   import DetailCommentInfo from "./childComps/DetailCommentInfo";
+  import DetailBottomBar from "./childComps/DetailBottomBar";
+
+  import Scroll from "components/common/scroll/Scroll";
+  import GoodsList from "components/content/goods/GoodsList";
+
   import {getDetail,Goods,Shop,GoodsParam,getRecommend} from "network/detail"
   import {deBounce} from "common/utils"
+
   import { itemListenerMinxin, backTopMinxin } from "common/mixin.js";
   export default {
     name:"Detail",
@@ -43,7 +48,8 @@
       DetailGoodsInfo,
       DetailParamInfo,
       DetailCommentInfo,
-      GoodsList
+      GoodsList,
+      DetailBottomBar
     },
     //属性
     props: {
@@ -112,16 +118,65 @@
          * position.y返回的是负数所以 -position.y获取正数比较
          */
         this.isShow= (-position.y) > 1000
+        /**
+         * 监听Scrool组件滚动事件,改变DetailNavBar选中
+         */
+        for(let i in this.tops){
+          let index=parseInt(i)
+          /**
+           * 首先判断index>2，获取到的就是最后一个推荐的坐标
+           * 当滚动大于或等于自己的时候就可以直接判断是推荐了
+           */
+          if(index>2 ){
+            if(-position.y>=this.tops[index]){
+              this.$refs.nb.currentIndex=index
+            }
+          }else{
+            /**
+             * 这里面只会判断三个值：0 1 2
+             * 当index不等于0的时候并且现在滚动位置大于自己且小于我后面的高度的时候就是当前位置
+             * 举例当index=1的时候，this.tops[index]取出来的就是商品参数的高度
+             * 用现在滚动的高度去对比是否大于等于了商品参数的高度
+             * 并且是否小于this.tops[index+1]也就是评论的高度
+             * 也就是说滚动到了商品参数这块但还没有滚到评论
+             * 以此类推
+             */
+            if(index!=0 && -position.y>=this.tops[index] && -position.y<this.tops[index+1]){
+              this.$refs.nb.currentIndex=index
+            }else{
+              /**
+               * 最终判断0，也就是商品高度
+               * 只需要判断当前高度是否小于商品参数高度即可
+               */
+              if(-position.y<this.tops[1]){
+                this.$refs.nb.currentIndex=0
+              }
+            }
+          }
+        }
       },
       /**
        * 切换标题，滚动到响应的位置
        * 监听DetailNavBar丢出的titleClick事件并获取选中的标题下标
        * 通过下标跳转到响应的位置，注意向上滚动Y轴为负数 所以:-this.tops[index]
-       * -this.tops[index]+40这里+40是-this.tops[index]这个值滚的多了一点，进行微调
-       * this.tops值在imgLoad事件里面获取
        */
       titleClick(index){
-        this.$refs.scroll.scrollTo(0,-this.tops[index]+40,100)
+        this.$refs.scroll.scrollTo(0,-this.tops[index],100)
+      },
+      addEvent(){
+        //获取购物车需要的信息
+        const product={}
+        product.image=this.topImages[0];
+        product.title=this.goods.title;
+        product.desc=this.goods.desc;
+        product.price=this.goods.newPrice;
+        product.iid=this.iid;
+        //
+        this.$store.dispatch("addCart",product).then(()=>{
+          for(let i of this.$store.getters.getCartList){
+          console.log(i)
+          }
+        })
       }
     },
     //计算属性
