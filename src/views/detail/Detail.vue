@@ -36,6 +36,8 @@
   import {deBounce} from "common/utils"
 
   import { itemListenerMinxin, backTopMinxin } from "common/mixin.js";
+
+  import { mapActions } from 'vuex'
   export default {
     name:"Detail",
     //组件
@@ -72,6 +74,7 @@
     },
     //调用函数
     methods:{
+      ...mapActions(['addCart']),
       getGoods(){
         getDetail(this.iid).then(res=>{
           const result=res.result
@@ -169,13 +172,16 @@
         product.image=this.topImages[0];
         product.title=this.goods.title;
         product.desc=this.goods.desc;
-        product.price=this.goods.newPrice;
+        product.price=parseInt(this.goods.oldPrice.substring(1,this.goods.oldPrice.length));
         product.iid=this.iid;
-        //
-        this.$store.dispatch("addCart",product).then(()=>{
-          for(let i of this.$store.getters.getCartList){
-          console.log(i)
-          }
+        product.checked=true;
+        //直接访问vuex
+         // this.$store.dispatch("addCart",product).then(res=>{
+        // console.log(res)
+        // })
+        //通过
+        this.addCart(product).then(res=>{
+          this.$toast.show(res)
         })
       }
     },

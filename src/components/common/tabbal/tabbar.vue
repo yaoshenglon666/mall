@@ -12,7 +12,11 @@
 </script>
 
 <style >
-  #tab-bal{display: flex; background-color: #f6f6f6;position: fixed;
+  #tab-bal{
+    display: flex; 
+    background-color: #f6f6f6;
+    height: 49px;
+    position: fixed;
     left: 0px;
     right: 0px;
     bottom: 0px;

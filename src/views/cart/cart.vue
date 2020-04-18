@@ -1,58 +1,56 @@
 <template>
   <div class="wrapper">
-    <ul>
-      <li>aaa1</li>
-      <li>aaa2</li>
-      <li>aaa3</li>
-      <li>aaa4</li>
-      <li>aaa5</li>
-      <li>aaa6</li>
-      <li>aaa7</li>
-      <li>aaa8</li>
-      <li>aaa9</li>
- 
-      <li>aaa48</li>
-      <li>aaa49</li>
-      <li>aaa50</li>
-      <li>aaa51</li>
-      <li>aaa52</li>
-      
+    <nav-bar class="nb">
+      <div slot="center" class="">购物车({{cartLength}})</div>
+    </nav-bar>
+    <cart-list :cartLists="cartLists"/>
+    <cart-total :cartList="cartLists" class="ct"/>
     
-    </ul>
   </div>
 </template>
 
 <script>
-  import BScroll from 'better-scroll'
+  import CartList from './childComps/CartList';
+  import CartTotal from './childComps/CartTotal';
+
+  import NavBar from "components/common/navbar/NavBar"
+
+  import {mapGetters} from 'vuex';""
   export default {
     name: "cart",
+    components:{
+      NavBar,
+      CartList,
+      CartTotal
+
+    },
     data(){
       return {
         scroll:null
       }
     },
+    computed:{
+      //两种语法
+     // ...mapGetters(['getCartList'],'getCartListLength')
+      ...mapGetters({
+        cartLength:'getCartListLength',
+        cartLists:'getCartList'
+      })
+    },
     mounted(){
-      this.scroll=new BScroll(document.querySelector('.wrapper'),{
-        probeType:3,
-       pullUpLoad:true,
-      })
       
-      this.scroll.on('scroll',(position)=>{
-       // console.log(position)
-
-      })
-      this.scroll.on('pullingUp',()=>{
-        console.log('上啦加载更多')
-        this.scroll.finishPullUp()
-      })
     }
   }
 </script>
 
 <style scoped>
-  .wrapper{
-    height: 100px;
-    background-color: red;
-    overflow: hidden;
+  .nb{
+    background-color: var(--color-tint);
+    box-shadow: 0 1px 1px rgba(100, 100, 100, 0.1);
+    color: #fff;
+  }
+  .ct{
+    position: relative;
+    bottom: 40px;
   }
 </style>
